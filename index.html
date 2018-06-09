@@ -1,0 +1,129 @@
+<html>
+<head>
+	<title>
+		my first plugin
+	</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<style>
+	
+	.container {
+		height: 200px;
+		border: 1px solid red;
+		overflow: scroll;
+		width: 500px;
+	}
+
+	.container ul {
+		padding-left: 0;
+	}
+
+	.container li {
+		list-style: none;
+		background-color: aliceblue;
+		padding: 0 5px 5px;
+		margin-bottom: 2px;
+	}
+		
+	.container .selected-user {
+				background: red;
+		}
+
+</style>
+
+<body>
+	<h1>hi</h1>
+	<div class="form-group search-label">
+		<label>To:
+    <input type="text" id="searchName" class="form-control search_name" size="50"
+           placeholder="Search..">
+  </label>
+	</div>
+	<div class="container">
+		<ul id="list_of_contacts">
+			<li>selvaganapathi</li>
+			<li>selvakarthick</li>
+			<li>karthick</li>
+			<li>krish</li>
+			<li>ramar</li>
+			<li>Laxman</li>
+			<li>kannan</li>
+			<li>karthika</li>
+			<li>x-men</li>
+			<li>anand</li>
+			<li>anandi</li>
+			<li>arun</li>
+		</ul>
+	</div>
+
+</body>
+
+</html>
+<script>
+	(function($) {
+		var contactSearch;
+		contactSearch = function() {
+			$(document).on('change', '#searchName', function() {
+				var list;
+				list = $("#list_of_contacts");
+				if ($(this).val()) {
+					$(list).find('li:not(:Contains(' + $(this).val() + '))').hide();
+					$(list).find('li:Contains(' + $(this).val() + ')').show();
+				} else {
+					$(list).find('li').show();
+				}
+				return false;
+			});
+			$(document).on('keyup', '#searchName', function(e) {
+				var activeUserList, activeUserListLength, highlightFirst, selectedItemIndex, userList;
+				highlightFirst = true;
+				$('#searchName').change();
+				userList = $("#list_of_contacts li");
+				activeUserList = userList.filter(function() {
+					return $(this).css("display") !== "none";
+				});
+				activeUserListLength = $(activeUserList).length;
+				selectedItemIndex = activeUserList.index($('.selected-user'));
+				$("#list_of_contacts p").remove();
+				if (e.keyCode === 38) {
+					highlightFirst = false;
+					userList.removeClass('selected-user');
+					if (selectedItemIndex <= 0) {
+						$(activeUserList[activeUserListLength - 1]).addClass('selected-user');
+					} else {
+						$(activeUserList[selectedItemIndex - 1]).addClass('selected-user');
+					}
+				}
+				if (e.keyCode === 40) {
+					highlightFirst = false;
+					userList.removeClass('selected-user');
+					if (selectedItemIndex >= activeUserListLength - 1) {
+						$(activeUserList[0]).addClass('selected-user');
+					} else {
+						$(activeUserList[selectedItemIndex + 1]).addClass('selected-user');
+					}
+				}
+				if (e.keyCode === 13) {
+					if ($('.selected-user').css("display") !== "none") {
+						$('.selected-user').click();
+					}
+				}
+				if (highlightFirst && activeUserListLength !== 0) {
+					userList.removeClass('selected-user');
+					$(activeUserList[0]).addClass('selected-user');
+				}
+				if (activeUserListLength === 0) {
+					$('#list_of_contacts').prepend('<p class="empty-message">No people found<p>');
+				}
+				$(this).change();
+			});
+		};
+		jQuery.expr[':'].Contains = function(a, i, m) {
+			return (a.textContent || a.innerText || '').toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+		};
+		$(function() {
+			contactSearch(function() {});
+		});
+	})(jQuery);
+
+</script>
